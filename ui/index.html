@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROAV Promotion Tool - Premium Edition</title>
+    <!-- Use a futuristic, bold font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <script type="text/javascript" src="/eel.js"></script>
+    <style>
+        :root {
+            /* Dark bloody red palette */
+            --bg-deep: #050000;
+            --blood-dark: #4a0000;
+            --blood-primary: #8B0000;
+            --blood-light: #FF1E1E;
+            --glass-bg: rgba(20, 0, 0, 0.4);
+            --glass-border: rgba(255, 30, 30, 0.15);
+            --text-main: #ffffff;
+            --text-muted: #ffbaba;
+
+            /* Glass properties */
+            --blur: blur(24px);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --shadow-glow: 0 0 20px rgba(255, 30, 30, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Abstract bloody mist background */
+            background:
+                radial-gradient(circle at top right, rgba(139, 0, 0, 0.2), transparent 50%),
+                radial-gradient(circle at bottom left, rgba(255, 30, 30, 0.1), transparent 40%),
+                var(--bg-deep);
+            overflow: hidden;
+        }
+
+        /* Fluid background animation */
+        .bg-glow {
+            position: absolute;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(255, 30, 30, 0.05) 0%, transparent 60%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            animation: pulse 8s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--blood-dark);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--blood-primary);
+        }
+
+        /* TYPOGRAPHY */
+        .brand-text {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #FF1E1E, #8B0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 30, 30, 0.3);
+        }
+
+        /* --- COMPONENTS --- */
+        .liquid-glass {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.8),
+                inset 0 0 20px rgba(255, 30, 30, 0.05);
+            /* Soft inner glow */
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 1. LOGIN SCREEN */
+        .login-panel {
+            padding: 3rem;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .logo-container {
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo-img {
+            width: 80px;
+            height: auto;
+            filter: drop-shadow(0 0 15px rgba(255, 30, 30, 0.6));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 1rem 1.2rem;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: var(--blood-light);
+            box-shadow:
+                inset 0 2px 4px rgba(0, 0, 0, 0.5),
+                0 0 15px rgba(255, 30, 30, 0.3);
+        }
+
+        .btn-blood {
+            background: linear-gradient(135deg, var(--blood-light), var(--blood-dark));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-blood::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: skewX(-20deg);
+        }
+
+        .btn-blood:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 30, 30, 0.5);
+        }
+
+        .btn-blood:hover::after {
+            left: 200%;
+            transition: 0.7s ease-in-out;
+        }
+
+        .btn-blood:active {
+            transform: translateY(1px);
+        }
+
+        /* 2. MAIN APP SCREEN */
+        .main-app {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Top Navbar */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: rgba(20, 0, 0, 0.6);
+            border-bottom: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar-brand img {
+            width: 35px;
+            filter: drop-shadow(0 0 10px rgba(255, 30, 30, 0.8));
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .sidebar-logo img {
+            width: 40px;
+            filter: drop-shadow(0 0 10px rgba(255, 30, 30, 0.8));
+        }
+
+        .nav-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .nav-item.active,
+        .nav-item:hover {
+            background: rgba(255, 30, 30, 0.1);
+            color: var(--text-main);
+            border-color: var(--glass-border);
+            box-shadow: inset 0 -2px 0 var(--blood-light);
+        }
+
+        /* Content Area */
+        .content {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.4s;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Top Bar: Stats */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stat-title {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--blood-light);
+            text-shadow: 0 0 10px rgba(255, 30, 30, 0.4);
+        }
+
+        /* Main Workspace Panels */
+        .workspace-panel {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            font-family: 'Orbitron', sans-serif;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h3::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 1em;
+            background: var(--blood-light);
+            border-radius: 2px;
+            box-shadow: 0 0 8px var(--blood-light);
+        }
+
+        .account-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            padding-right: 5px;
+        }
+
+        .account-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .account-item:hover {
+            border-color: rgba(255, 30, 30, 0.4);
+            box-shadow: 0 0 10px rgba(255, 30, 30, 0.1);
+        }
+
+        .btn-small {
+            background: rgba(255, 30, 30, 0.1);
+            color: var(--blood-light);
+            border: 1px solid var(--blood-dark);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover {
+            background: var(--blood-light);
+            color: white;
+        }
+
+        textarea {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 1.2rem;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            resize: none;
+            flex-grow: 1;
+            margin-bottom: 1.5rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .logs-panel {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--blood-dark);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--blood-light);
+            height: 180px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            text-shadow: 0 0 5px rgba(255, 30, 30, 0.5);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, .3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-glow"></div>
+
+    <!-- 1. LOGIN / LICENSE SCREEN -->
+    <div class="liquid-glass login-panel" id="licenseScreen">
+        <div class="logo-container">
+            <img src="logo.png" alt="ROAV Logo" class="logo-img" onerror="this.style.display='none'">
+        </div>
+        <h1 class="brand-text" style="font-size: 2.2rem; margin-bottom: 0.5rem;">ROAV</h1>
+        <p style="color: var(--text-muted); margin-bottom: 2.5rem; letter-spacing: 2px; font-size: 0.9rem;">TEAM PREMIUM
+            TOOL</p>
+
+        <div class="input-group">
+            <label>License Key Validation</label>
+            <input type="password" id="licenseKey" placeholder="Enter ROAV License Key" autocomplete="off">
+        </div>
+
+        <button class="btn-blood" id="activateBtn" onclick="verifyLicense()">Activate Terminal</button>
+        <p id="licenseMsg" style="margin-top: 1.5rem; font-size: 0.9rem; font-family: monospace;"></p>
+
+        <div style="margin-top: 2rem; font-size: 0.85rem; color: var(--text-muted);">
+            Buy Now: <a href="#" id="buyLinkElem" target="_blank"
+                style="color: var(--blood-light); font-weight: bold; text-decoration: none;">@ownerroav</a>
+        </div>
+    </div>
+
+    <!-- 2. MAIN APP SCREEN -->
+    <div class="main-app" id="appScreen">
+
+        <!-- TOP NAVBAR -->
+        <div class="navbar">
+            <div class="navbar-brand">
+                <img src="logo.png" alt="ROAV" onerror="this.style.display='none'">
+                <div>
+                    <div class="brand-text" style="font-size: 1.5rem;">ROAV</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px;">PROMO SYSTEM</div>
+                </div>
+            </div>
+
+            <div class="nav-tabs">
+                <div class="nav-item active" onclick="switchTab('dashboard', this)">🏠 Dashboard</div>
+                <div class="nav-item" onclick="switchTab('message', this)">✏️ Message</div>
+                <div class="nav-item" onclick="switchTab('groups', this)">👥 Groups</div>
+                <div class="nav-item" onclick="switchTab('join', this)">🔗 Join Groups</div>
+                <div class="nav-item" onclick="switchTab('schedule', this)">⏰ Schedule</div>
+                <div class="nav-item" onclick="switchTab('logs', this)">📋 Logs</div>
+                <div class="nav-item" onclick="switchTab('about', this)">ℹ️ About</div>
+            </div>
+
+            <button class="btn-small btn-red" onclick="logoutApp()" style="white-space: nowrap;">LOGOUT</button>
+        </div>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="content">
+
+            <!-- ========== TAB 1: DASHBOARD ========== -->
+            <div id="tab-dashboard" class="tab-pane active">
+                <!-- Stats Row -->
+                <div class="stats-row" style="margin-bottom: 2rem;">
+                    <div class="liquid-glass stat-card">
+                        <div class="stat-title">System Status</div>
+                        <div class="stat-value" id="licenseInfo" style="font-size: 1.5rem;">Active</div>
+                    </div>
+                    <div class="liquid-glass stat-card">
+                        <div class="stat-title">Connected Nodes</div>
+                        <div class="stat-value" id="nodeCount">0</div>
+                    </div>
+                    <div class="liquid-glass stat-card">
+                        <div class="stat-title">Groups Joined</div>
+                        <div class="stat-value" id="groupsJoinedCount">0</div>
+                    </div>
+                    <div class="liquid-glass stat-card">
+                        <div class="stat-title">Messages Deployed</div>
+                        <div class="stat-value" id="msgCount">0</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="liquid-glass workspace-panel">
+                    <h3>Quick Actions</h3>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+                        <button class="btn-blood"
+                            onclick="switchTab('message', document.querySelectorAll('.nav-item')[1])"
+                            style="padding: 0.8rem 1.5rem;">✏️ Edit Message</button>
+                        <button class="btn-blood"
+                            onclick="switchTab('groups', document.querySelectorAll('.nav-item')[2])"
+                            style="padding: 0.8rem 1.5rem;">👥 Manage Groups</button>
+                        <button class="btn-blood"
+                            onclick="switchTab('schedule', document.querySelectorAll('.nav-item')[4])"
+                            style="padding: 0.8rem 1.5rem;">⏰ Set Schedule</button>
+                        <button class="btn-blood"
+                            onclick="switchTab('message', document.querySelectorAll('.nav-item')[1])"
+                            style="padding: 0.8rem 1.5rem; background: linear-gradient(135deg, #34C759, #006400);">🚀
+                            Start Promotion</button>
+                    </div>
+                </div>
+
+                <!-- Transmission Nodes -->
+                <div class="liquid-glass workspace-panel">
+                    <h3>Transmission Nodes</h3>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1.5rem; line-height: 1.4;">
+                        Add multiple TG accounts. The system uses <b>Round-Robin</b> transmission to evade spam filters
+                        across all active nodes.
+                    </p>
+
+                    <div
+                        style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; align-items: stretch; max-width: 500px;">
+                        <input type="text" id="phoneInput" placeholder="Ex: +91 999 999 9999" style="flex-grow: 1;">
+                        <button class="btn-blood" style="width: 130px; padding: 0;" onclick="addAccount()" id="addBtn">+
+                            ADD NODE</button>
+                    </div>
+
+                    <!-- Hidden Auth Steps -->
+                    <div id="authSteps"
+                        style="display: none; background: rgba(255,30,30,0.1); border: 1px solid var(--blood-dark); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; max-width: 500px;">
+                        <input type="text" id="otpInput" placeholder="Enter OTP / 2FA Password"
+                            style="width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
+                        <button class="btn-blood" onclick="submitAuth()" id="authBtn" style="padding: 0.8rem;">Verify
+                            Access</button>
+                    </div>
+
+                    <div class="account-list" id="accountList"
+                        style="max-height: 400px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; overflow-y: auto;">
+                        <div
+                            style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); margin-top: 2rem; opacity: 0.5;">
+                            No nodes active. Add a Telegram account to get started.</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="liquid-glass workspace-panel">
+                    <h3>Recent Activity</h3>
+                    <div class="logs-panel" id="activityLog" style="height: 150px;">
+                        🔔 Welcome to ROAV Promotion Tool!<br>
+                        ✅ System initialized successfully<br>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== TAB 2: MESSAGE ========== -->
+            <div id="tab-message" class="tab-pane">
+                <div class="liquid-glass workspace-panel">
+                    <h3>Promotion Message</h3>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1.5rem;">Write your
+                        promotional message below. This will be broadcast to all selected groups.</p>
+
+                    <textarea id="messageText" placeholder="Enter payload (promotional message) here..."
+                        style="min-height: 250px; width: 100%; box-sizing: border-box;"></textarea>
+
+                    <!-- Media Attachment -->
+                    <div
+                        style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px dashed var(--glass-border);">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;" id="mediaLabel">📎 No media
+                            attached</span>
+                        <button class="btn-small" onclick="document.getElementById('mediaFileInput').click()">➕ Attach
+                            Image/Video</button>
+                        <button class="btn-small btn-red" onclick="removeMedia()">✖ Remove</button>
+                        <input type="file" id="mediaFileInput" accept="image/*,video/*" style="display: none;"
+                            onchange="onMediaSelected(this)">
+                    </div>
+                </div>
+
+                <div class="liquid-glass workspace-panel">
+                    <h3>Broadcast Controls</h3>
+                    <div style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="input-group" style="margin-bottom: 0; flex-grow: 1;">
+                            <label>Target Vectors (Group IDs / Usernames)</label>
+                            <input type="text" id="groupList"
+                                placeholder="Ex: @group1, https://t.me/group2, -1001234567">
+                        </div>
+                        <div class="input-group" style="margin-bottom: 0; width: 150px;">
+                            <label>Delay (seconds)</label>
+                            <input type="number" id="delaySec" value="5" min="1">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <button class="btn-blood" id="startBtn" onclick="startCampaign()">🚀 EXECUTE BROADCAST</button>
+                        <button class="btn-blood" id="stopBtn" onclick="stopCampaign()"
+                            style="display:none; background: linear-gradient(135deg, #ef4444, #991b1b);">⛔ ABORT
+                            EXECUTION</button>
+                    </div>
+
+                    <div class="logs-panel" id="broadcastLogs" style="height: 200px;">
+                        [SYSTEM] Broadcast module ready. Standing by for deployment.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== TAB 3: GROUPS ========== -->
+            <div id="tab-groups" class="tab-pane">
+                <div class="liquid-glass workspace-panel">
+                    <h3>Your Telegram Groups</h3>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1.5rem;">
+                        Select which groups to send promotions to. Click an account node to load its groups.
+                    </p>
+
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                        <select id="nodeForGroups"
+                            style="flex-grow: 1; padding: 0.8rem; background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
+                            <option value="">-- Select Account Node --</option>
+                        </select>
+                        <button class="btn-blood" onclick="loadGroupsForNode()" style="padding: 0.8rem 1.5rem;">🔄 Load
+                            Groups</button>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <button class="btn-small" onclick="selectAllGroups()">✓ Select All</button>
+                        <button class="btn-small" onclick="deselectAllGroups()">✗ Deselect All</button>
+                        <button class="btn-small" onclick="saveSelectedGroups()"
+                            style="background: rgba(52,199,89,0.2); color: #34C759; border-color: #34C759;">💾 Save
+                            Selection</button>
+                        <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: auto;"
+                            id="groupsInfo">Total: 0 | Selected: 0</span>
+                    </div>
+
+                    <div id="groupsList"
+                        style="max-height: 500px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="text-align: center; color: var(--text-muted); padding: 3rem; opacity: 0.5;">Select
+                            an account node and click Load Groups to see your groups.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== TAB 4: JOIN GROUPS ========== -->
+            <div id="tab-join" class="tab-pane">
+                <div class="liquid-glass workspace-panel">
+                    <h3>Join Multiple Groups</h3>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1.5rem; max-width: 700px;">
+                        Auto-join target groups from the Admin Server categories OR paste links manually below.
+                    </p>
+
+                    <!-- Category-based Join -->
+                    <div
+                        style="background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                        <h4
+                            style="color: var(--blood-light); margin: 0 0 1rem 0; font-family: 'Orbitron', sans-serif; font-size: 0.9rem;">
+                            📡 Server Categories (Admin Controlled)</h4>
+                        <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem; max-width: 600px;">
+                            <div class="input-group" style="margin-bottom: 0; flex-grow: 1;">
+                                <label>Category</label>
+                                <select id="categorySelect" onchange="updateCategoryInfo()"
+                                    style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
+                                    <option value="">-- Select Category --</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0; width: 100px;">
+                                <label>Limit</label>
+                                <input type="number" id="joinCount" value="10" min="1">
+                            </div>
+                        </div>
+                        <div style="color: var(--blood-light); font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem;"
+                            id="catInfo">Vectors Available: 0</div>
+                        <button class="btn-blood" id="joinBtn" onclick="executeMassJoin()"
+                            style="padding: 0.8rem 1.5rem;">🚀 Join From Category</button>
+                    </div>
+
+                    <!-- Manual Link Join -->
+                    <div
+                        style="background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                        <h4
+                            style="color: var(--blood-light); margin: 0 0 1rem 0; font-family: 'Orbitron', sans-serif; font-size: 0.9rem;">
+                            📋 Manual Links (Paste Below)</h4>
+                        <textarea id="manualJoinLinks"
+                            placeholder="Paste Telegram group links here, one per line...&#10;&#10;https://t.me/group1&#10;https://t.me/+abcXYZ123&#10;https://t.me/chat_3/20162324"
+                            style="min-height: 150px; width: 100%; box-sizing: border-box;"></textarea>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <button class="btn-blood" onclick="joinManualLinks()" style="padding: 0.8rem 1.5rem;">🔗
+                                Join All Pasted Links</button>
+                            <button class="btn-small" onclick="document.getElementById('manualJoinLinks').value=''">🧹
+                                Clear</button>
+                        </div>
+                    </div>
+
+                    <!-- Join Progress -->
+                    <div style="margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;"
+                        id="joinProgressText">Ready to join groups</div>
+                    <div class="logs-panel" id="joinLogsWindow"
+                        style="height: 250px; border-color: rgba(255,255,255,0.15); color: #ccc;">
+                        [SYSTEM] Auto-Joiner ready. Waiting for your command.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== TAB 5: SCHEDULE ========== -->
+            <div id="tab-schedule" class="tab-pane">
+                <div class="liquid-glass workspace-panel">
+                    <h3>Sending Schedule</h3>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1.5rem;">Set the interval
+                        between message sends. Auto-repeat will keep broadcasting at the set interval.</p>
+
+                    <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                        <button class="btn-small" onclick="setDelay(5)">5 sec</button>
+                        <button class="btn-small" onclick="setDelay(10)">10 sec</button>
+                        <button class="btn-small" onclick="setDelay(30)">30 sec</button>
+                        <button class="btn-small" onclick="setDelay(60)">1 min</button>
+                        <button class="btn-small" onclick="setDelay(300)">5 min</button>
+                        <button class="btn-small" onclick="setDelay(900)">15 min</button>
+                        <button class="btn-small" onclick="setDelay(1800)">30 min</button>
+                        <button class="btn-small" onclick="setDelay(3600)">60 min</button>
+                    </div>
+
+                    <div
+                        style="display: flex; gap: 1rem; align-items: flex-end; margin-bottom: 2rem; max-width: 400px;">
+                        <div class="input-group" style="margin-bottom: 0; flex-grow: 1;">
+                            <label>Custom Interval (seconds)</label>
+                            <input type="number" id="customDelay" value="5" min="1">
+                        </div>
+                        <button class="btn-blood"
+                            onclick="setDelay(parseInt(document.getElementById('customDelay').value))"
+                            style="padding: 0.8rem 1.5rem;">Set</button>
+                    </div>
+
+                    <div
+                        style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--glass-border); margin-bottom: 1.5rem;">
+                        <input type="checkbox" id="autoRepeatCheck"
+                            style="width: 20px; height: 20px; accent-color: var(--blood-light);">
+                        <label for="autoRepeatCheck"
+                            style="color: var(--text-main); font-weight: 600; cursor: pointer;">🔄 Auto-repeat messages
+                            at set interval</label>
+                    </div>
+
+                    <div style="color: var(--text-muted); font-size: 0.9rem;" id="scheduleInfo">
+                        Current Delay: <span style="color: var(--blood-light); font-weight: bold;">5 seconds</span>
+                        between each send.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== TAB 6: LOGS ========== -->
+            <div id="tab-logs" class="tab-pane">
+                <div class="liquid-glass workspace-panel">
+                    <h3>Activity Logs</h3>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <button class="btn-small"
+                            onclick="document.getElementById('logsWindow').innerHTML='[SYSTEM] Logs cleared.'">🧹 Clear
+                            Logs</button>
+                    </div>
+                    <div class="logs-panel" id="logsWindow" style="height: 60vh;">
+                        [SYSTEM] Terminal initialized. Complete tracking mode active.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== TAB 7: ABOUT ========== -->
+            <div id="tab-about" class="tab-pane">
+                <div class="liquid-glass workspace-panel">
+                    <h3 style="margin-bottom: 0.3rem;">📖 How To Use This Tool</h3>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2rem;">Follow these steps to
+                        start promoting your messages across Telegram groups.</p>
+
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- Step 1 -->
+                        <div style="display: flex; gap: 1.2rem; align-items: flex-start;">
+                            <div
+                                style="min-width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--blood-dark), var(--blood-light)); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem;">
+                                1</div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🔑 License
+                                    Activation</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">Enter your
+                                    ROAV License Key on the login screen. This key is provided by the admin. Once
+                                    activated, you will be auto-logged in on next launch.</div>
+                            </div>
+                        </div>
+                        <!-- Step 2 -->
+                        <div style="display: flex; gap: 1.2rem; align-items: flex-start;">
+                            <div
+                                style="min-width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--blood-dark), var(--blood-light)); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem;">
+                                2</div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">📱 Add Telegram
+                                    Account</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">Go to
+                                    <b>Dashboard</b> → Enter your phone number (with country code like +91) → Enter the
+                                    OTP sent by Telegram → If 2FA is enabled, enter your password. Your session is saved
+                                    — you won't need to login again!</div>
+                            </div>
+                        </div>
+                        <!-- Step 3 -->
+                        <div style="display: flex; gap: 1.2rem; align-items: flex-start;">
+                            <div
+                                style="min-width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--blood-dark), var(--blood-light)); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem;">
+                                3</div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🔗 Join Target
+                                    Groups</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">If you
+                                    don't have groups yet, go to <b>Join Groups</b> tab → Select a category loaded by
+                                    admin → Click "Join From Category" and all groups will be auto-joined. You can also
+                                    paste links manually.</div>
+                            </div>
+                        </div>
+                        <!-- Step 4 -->
+                        <div style="display: flex; gap: 1.2rem; align-items: flex-start;">
+                            <div
+                                style="min-width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--blood-dark), var(--blood-light)); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem;">
+                                4</div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">👥 Select Groups for
+                                    Broadcast</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">Go to
+                                    <b>Groups</b> tab → Select your account node → Click "Load Groups" → Select the
+                                    groups you want to broadcast to → Click "Save Selection". The group IDs auto-fill in
+                                    the Message tab.</div>
+                            </div>
+                        </div>
+                        <!-- Step 5 -->
+                        <div style="display: flex; gap: 1.2rem; align-items: flex-start;">
+                            <div
+                                style="min-width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--blood-dark), var(--blood-light)); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem;">
+                                5</div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">✏️ Write Your
+                                    Message</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">Go to
+                                    <b>Message</b> tab → Type your promotional message → Optionally attach an
+                                    image/video → Set the delay between sends.</div>
+                            </div>
+                        </div>
+                        <!-- Step 6 -->
+                        <div style="display: flex; gap: 1.2rem; align-items: flex-start;">
+                            <div
+                                style="min-width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--blood-dark), var(--blood-light)); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem;">
+                                6</div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">⏰ Set Schedule
+                                    (Optional)</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">Go to
+                                    <b>Schedule</b> tab → Choose a preset delay (5 sec, 1 min, etc.) or set custom →
+                                    Enable auto-repeat if you want continuous broadcasting.</div>
+                            </div>
+                        </div>
+                        <!-- Step 7 -->
+                        <div style="display: flex; gap: 1.2rem; align-items: flex-start;">
+                            <div
+                                style="min-width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--blood-dark), var(--blood-light)); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem;">
+                                7</div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🚀 Start
+                                    Broadcasting!</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">Click
+                                    <b>"EXECUTE BROADCAST"</b> and watch the messages go out to all selected groups.
+                                    View real-time progress in the <b>Logs</b> tab. Click "ABORT" to stop anytime.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Details -->
+                <div class="liquid-glass workspace-panel" style="margin-top: 1.5rem;">
+                    <h3>🛡️ About ROAV Team</h3>
+                    <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 1.5rem;">
+                        <!-- Tool Info -->
+                        <div style="flex: 1; min-width: 280px;">
+                            <div
+                                style="font-size: 2rem; font-family: 'Orbitron', sans-serif; font-weight: 900; background: linear-gradient(135deg, var(--blood-light), #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.8rem;">
+                                ROAV PROMO TOOL</div>
+                            <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.8;">
+                                <b>Version:</b> 2.0 Premium Edition<br>
+                                <b>Platform:</b> Windows Desktop (EXE)<br>
+                                <b>Backend:</b> FastAPI + PostgreSQL (Neon)<br>
+                                <b>Engine:</b> Telethon (Telegram MTProto)<br>
+                                <b>UI Framework:</b> Eel + Custom Glassmorphism<br>
+                            </div>
+                        </div>
+                        <!-- Creator -->
+                        <div style="flex: 1; min-width: 280px;">
+                            <div
+                                style="font-weight: 700; font-size: 1.1rem; margin-bottom: 1rem; color: var(--blood-light);">
+                                👨‍💻 Built by ROAV Team</div>
+                            <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.8;">
+                                <b>Developer:</b> @x_roav<br>
+                                <b>Telegram:</b> <a href="https://t.me/roavteam" target="_blank"
+                                    style="color: var(--blood-light); text-decoration: none;">t.me/roavteam</a><br>
+                                <b>Support:</b> <a href="https://t.me/roavteam" target="_blank"
+                                    style="color: var(--blood-light); text-decoration: none;">Contact Admin</a><br>
+                            </div>
+                            <div
+                                style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,30,30,0.1); border: 1px solid var(--blood-dark); border-radius: 8px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;">
+                                ⚠️ <b>Disclaimer:</b> This tool is for ethical promotional purposes only. The ROAV team
+                                is not responsible for misuse. Use at your own risk. Respect Telegram's Terms of
+                                Service.
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--glass-border); color: var(--text-muted); font-size: 0.8rem;">
+                        Made with ❤️ by ROAV Team | © 2025 All Rights Reserved
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- END CONTENT -->
+    </div>
+    <!-- END APP SCREEN -->
+
+    <script>
+        // ======================== STATE ========================
+        let currentAuthPhone = "";
+        let needs2FA = false;
+        let messagesSentOut = 0;
+        let serverCategories = [];
+        let loadedGroups = []; // Groups from Telegram account
+        let selectedGroupIds = []; // User-selected groups for broadcast
+
+        // ======================== ON LOAD ========================
+        window.onload = function () {
+            const savedKey = localStorage.getItem('roav_license_key');
+            if (savedKey) {
+                document.getElementById('licenseKey').value = savedKey;
+                verifyLicense();
+            }
+            loadServerData();
+        }
+
+        // ======================== TAB SWITCHING ========================
+        function switchTab(tabId, clickedEl) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tabs .nav-item').forEach(el => el.classList.remove('active'));
+
+            const tab = document.getElementById('tab-' + tabId);
+            if (tab) tab.classList.add('active');
+            if (clickedEl) clickedEl.classList.add('active');
+        }
+
+        // ======================== 1. LICENSE VERIFICATION ========================
+        async function verifyLicense() {
+            const key = document.getElementById('licenseKey').value.trim();
+            const btn = document.getElementById('activateBtn');
+            const msg = document.getElementById('licenseMsg');
+
+            if (!key) {
+                msg.innerText = "Error: Key required.";
+                msg.style.color = "var(--blood-light)";
+                return;
+            }
+
+            btn.innerHTML = "<span class='spinner'></span> Authenticating";
+            btn.disabled = true;
+
+            const res = await eel.validate_license(key)();
+
+            if (res.success) {
+                msg.innerText = "> ACCESS GRANTED";
+                msg.style.color = "#0f0";
+
+                setTimeout(() => {
+                    document.getElementById('licenseScreen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('licenseScreen').style.display = 'none';
+                        document.getElementById('appScreen').style.display = 'flex';
+                        document.getElementById('appScreen').animate([
+                            { opacity: 0, transform: 'scale(0.95)' },
+                            { opacity: 1, transform: 'scale(1)' }
+                        ], { duration: 500, fill: 'forwards', easing: 'ease-out' });
+
+                        document.getElementById('licenseInfo').innerText = `${res.expires_in} days`;
+                        refreshAccountList();
+                        loadServerData();
+                        localStorage.setItem('roav_license_key', key);
+                    }, 400);
+                }, 800);
+            } else {
+                msg.innerText = "> ACCESS DENIED: " + res.message;
+                msg.style.color = "var(--blood-light)";
+                btn.innerHTML = "Activate Terminal";
+                btn.disabled = false;
+            }
+        }
+
+        document.getElementById('licenseKey').addEventListener("keypress", function (event) {
+            if (event.key === "Enter") { event.preventDefault(); verifyLicense(); }
+        });
+
+        // ======================== 2. TELEGRAM LOGIN ========================
+        async function addAccount() {
+            const phone = document.getElementById('phoneInput').value.trim();
+            if (!phone) return;
+
+            currentAuthPhone = phone;
+            const btn = document.getElementById('addBtn');
+            btn.disabled = true;
+            btn.innerHTML = "<span class='spinner' style='width:12px;height:12px;border-width:2px;'></span>";
+
+            await eel.send_otp(phone)();
+        }
+
+        eel.expose(on_otp_sent);
+        function on_otp_sent(res) {
+            const btn = document.getElementById('addBtn');
+            btn.disabled = false;
+            btn.innerText = "+ ADD NODE";
+
+            if (res.success) {
+                document.getElementById('authSteps').style.display = 'block';
+                document.getElementById('otpInput').placeholder = "Enter Telegram SMS OTP";
+                needs2FA = false;
+            } else {
+                alert("Error: " + res.message);
+            }
+        }
+
+        async function submitAuth() {
+            const code = document.getElementById('otpInput').value.trim();
+            if (!code) return;
+
+            document.getElementById('authBtn').innerHTML = "<span class='spinner'></span>";
+
+            if (!needs2FA) {
+                await eel.verify_otp(currentAuthPhone, code)();
+            } else {
+                await eel.verify_2fa(currentAuthPhone, code)();
+            }
+        }
+
+        eel.expose(on_login_complete);
+        function on_login_complete(res) {
+            document.getElementById('authBtn').innerText = "Verify Access";
+
+            if (res.success) {
+                document.getElementById('authSteps').style.display = 'none';
+                document.getElementById('phoneInput').value = '';
+                document.getElementById('otpInput').value = '';
+                addLog(`✅ Node ${res.phone} (${res.user}) connected successfully.`);
+                refreshAccountList();
+            } else if (res.needs_2fa) {
+                needs2FA = true;
+                document.getElementById('otpInput').value = '';
+                document.getElementById('otpInput').placeholder = "Enter 2FA Password";
+                addLog(`🔐 Node requires 2FA Password`);
+            } else {
+                alert("Verification Failed: " + res.message);
+            }
+        }
+
+        // Mask phone number for display: e.g. 919999999999 -> 91****99**99
+        function maskPhone(phone) {
+            if (phone.length <= 4) return phone;
+            const first2 = phone.substring(0, 2);
+            const last4 = phone.substring(phone.length - 4);
+            const mid = '*'.repeat(phone.length - 6);
+            return first2 + mid + last4;
+        }
+
+        async function refreshAccountList() {
+            const phones = await eel.get_logged_in_accounts()();
+            const list = document.getElementById('accountList');
+            document.getElementById('nodeCount').innerText = phones.length;
+
+            // Also update the Groups tab node selector
+            const nodeSel = document.getElementById('nodeForGroups');
+            if (nodeSel) {
+                nodeSel.innerHTML = '<option value="">-- Select Account Node --</option>';
+                phones.forEach(p => {
+                    nodeSel.innerHTML += `<option value="${p}">${maskPhone(p)}</option>`;
+                });
+            }
+
+            if (phones.length === 0) {
+                list.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); margin-top: 2rem; opacity: 0.5;">No nodes active. Add a Telegram account to get started.</div>`;
+                return;
+            }
+
+            list.innerHTML = '';
+            phones.forEach(phone => {
+                list.innerHTML += `
+                    <div class="account-item">
+                        <div>
+                            <div style="font-family: monospace; font-size: 1.1rem;">${maskPhone(phone)}</div>
+                            <div style="font-size: 0.75rem; color: #0f0; margin-top: 2px;">● ONLINE</div>
+                        </div>
+                        <button class="btn-small" onclick="removeAccount('${phone}')">KICK</button>
+                    </div>
+                `;
+            });
+        }
+
+        window.removeAccount = async function (phone) {
+            if (confirm('Disconnect this node?')) {
+                await eel.delete_account(phone)();
+                addLog(`❌ Node ${phone} disconnected.`);
+                refreshAccountList();
+            }
+        }
+
+        // ======================== 3. GROUPS TAB ========================
+        async function loadGroupsForNode() {
+            const phone = document.getElementById('nodeForGroups').value;
+            if (!phone) { alert("Select an account node first."); return; }
+
+            document.getElementById('groupsList').innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading groups...</div>';
+            addLog(`📥 Fetching groups for ${phone}...`);
+
+            await eel.fetch_groups_from_account(phone)();
+        }
+
+        eel.expose(on_groups_fetched);
+        function on_groups_fetched(result) {
+            const groups = result.data || [];
+            loadedGroups = groups;
+            const container = document.getElementById('groupsList');
+
+            if (groups.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">No groups found for this account.</div>';
+                return;
+            }
+
+            addLog(`✅ Found ${groups.length} groups for ${result.phone}`);
+            container.innerHTML = '';
+
+            groups.forEach((g, idx) => {
+                const isSelected = selectedGroupIds.includes(g.id);
+                container.innerHTML += `
+                    <div style="display: flex; align-items: center; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid ${isSelected ? 'var(--blood-light)' : 'var(--glass-border)'}; border-radius: 8px; cursor: pointer;" 
+                         onclick="toggleGroup('${g.id}', this)" id="group-${g.id}">
+                        <input type="checkbox" ${isSelected ? 'checked' : ''} style="margin-right: 1rem; accent-color: var(--blood-light); width: 16px; height: 16px;">
+                        <div style="flex-grow: 1;">
+                            <div style="color: white; font-weight: 600;">${g.title}</div>
+                            <div style="color: var(--text-muted); font-size: 0.75rem;">${g.type} | ID: ${g.id}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            updateGroupsInfo();
+        }
+
+        function toggleGroup(groupId, el) {
+            const idx = selectedGroupIds.indexOf(groupId);
+            if (idx > -1) {
+                selectedGroupIds.splice(idx, 1);
+                el.style.borderColor = 'var(--glass-border)';
+                el.querySelector('input').checked = false;
+            } else {
+                selectedGroupIds.push(groupId);
+                el.style.borderColor = 'var(--blood-light)';
+                el.querySelector('input').checked = true;
+            }
+            updateGroupsInfo();
+        }
+
+        function selectAllGroups() {
+            selectedGroupIds = loadedGroups.map(g => g.id);
+            document.querySelectorAll('#groupsList > div').forEach(el => {
+                el.style.borderColor = 'var(--blood-light)';
+                const cb = el.querySelector('input');
+                if (cb) cb.checked = true;
+            });
+            updateGroupsInfo();
+        }
+
+        function deselectAllGroups() {
+            selectedGroupIds = [];
+            document.querySelectorAll('#groupsList > div').forEach(el => {
+                el.style.borderColor = 'var(--glass-border)';
+                const cb = el.querySelector('input');
+                if (cb) cb.checked = false;
+            });
+            updateGroupsInfo();
+        }
+
+        function saveSelectedGroups() {
+            // Auto-fill the group list in the message tab
+            document.getElementById('groupList').value = selectedGroupIds.join(', ');
+            addLog(`💾 Saved ${selectedGroupIds.length} groups as broadcast targets.`);
+            alert(`${selectedGroupIds.length} groups saved! Switch to Message tab to broadcast.`);
+        }
+
+        function updateGroupsInfo() {
+            document.getElementById('groupsInfo').innerText = `Total: ${loadedGroups.length} | Selected: ${selectedGroupIds.length}`;
+        }
+
+        // ======================== 4. BROADCASTING ========================
+        async function startCampaign() {
+            const targetIdsStr = document.getElementById('groupList').value;
+            const msgBody = document.getElementById('messageText').value;
+            const delay = document.getElementById('delaySec').value;
+            const autoRepeat = document.getElementById('autoRepeatCheck').checked;
+            const repeatInterval = parseInt(document.getElementById('customDelay').value) || 300;
+
+            if (!targetIdsStr || !msgBody) {
+                alert('Missing target groups or message text!'); return;
+            }
+
+            const ids = targetIdsStr.split(",").map(id => id.trim()).filter(id => id);
+
+            const res = await eel.start_broadcast(ids, msgBody, delay, autoRepeat, repeatInterval)();
+            if (res.success) {
+                document.getElementById('startBtn').style.display = 'none';
+                document.getElementById('stopBtn').style.display = 'block';
+                addBroadcastLog("> 🚀 EXECUTING MASS BROADCAST PROTOCOL");
+                addBroadcastLog(`> ${ids.length} targets acquired. Delay: ${delay}s`);
+                if (autoRepeat) {
+                    addBroadcastLog(`> 🔄 AUTO-REPEAT ENABLED - Will repeat every ${repeatInterval}s`);
+                }
+            } else {
+                alert(res.message);
+            }
+        }
+
+        async function stopCampaign() {
+            await eel.stop_broadcast()();
+            document.getElementById('startBtn').style.display = 'block';
+            document.getElementById('stopBtn').style.display = 'none';
+            addBroadcastLog("> ⛔ Broadcast aborted by user.");
+        }
+
+        eel.expose(log_message);
+        function log_message(msg) {
+            addLog(msg);
+            addBroadcastLog(msg);
+
+            if (msg.includes("[SUCCESS]")) {
+                messagesSentOut++;
+                document.getElementById('msgCount').innerText = messagesSentOut;
+            }
+
+            if (msg.includes("Broadcast Finish") || msg.includes("stopped by user")) {
+                document.getElementById('startBtn').style.display = 'block';
+                document.getElementById('stopBtn').style.display = 'none';
+            }
+        }
+
+        function addBroadcastLog(msg) {
+            const logs = document.getElementById('broadcastLogs');
+            if (logs) {
+                logs.innerHTML += `${msg}<br>`;
+                logs.scrollTop = logs.scrollHeight;
+            }
+        }
+
+        // ======================== 5. JOIN GROUPS (FROM ADMIN CATEGORIES) ========================
+        async function loadServerData() {
+            try {
+                const res = await eel.fetch_app_data()();
+                if (res.success && res.data) {
+                    document.getElementById('buyLinkElem').href = res.data.buy_link;
+
+                    serverCategories = res.data.categories || [];
+                    const sel = document.getElementById('categorySelect');
+                    sel.innerHTML = '<option value="">-- Select Category --</option>';
+                    serverCategories.forEach(cat => {
+                        sel.innerHTML += `<option value="${cat.id}">${cat.name} (${cat.links ? cat.links.length : 0} links)</option>`;
+                    });
+                }
+            } catch (e) { console.log("Server data fetch error:", e); }
+        }
+
+        function updateCategoryInfo() {
+            const val = document.getElementById('categorySelect').value;
+            const info = document.getElementById('catInfo');
+            if (!val) { info.innerText = "Vectors Available: 0"; return; }
+            const cat = serverCategories.find(c => c.id == val);
+            if (cat) info.innerText = `Vectors Available: ${cat.links ? cat.links.length : 0}`;
+        }
+
+        async function executeMassJoin() {
+            const val = document.getElementById('categorySelect').value;
+            const count = document.getElementById('joinCount').value;
+            if (!val) { alert("Select a category first."); return; }
+
+            const cat = serverCategories.find(c => c.id == val);
+            if (!cat || !cat.links || cat.links.length === 0) {
+                alert("No links in this category."); return;
+            }
+
+            const linkUrls = cat.links.map(l => l.url);
+            const btn = document.getElementById('joinBtn');
+            btn.disabled = true;
+            btn.innerText = "⏳ Joining...";
+            document.getElementById('joinProgressText').innerText = `Joining ${Math.min(count, linkUrls.length)} groups...`;
+
+            const res = await eel.join_target_groups(linkUrls, count)();
+            if (!res.success) {
+                alert(res.message);
+                btn.disabled = false;
+                btn.innerText = "🚀 Join From Category";
+            }
+        }
+
+        // Manual join from pasted links
+        async function joinManualLinks() {
+            const text = document.getElementById('manualJoinLinks').value.trim();
+            if (!text) { alert("Paste some links first."); return; }
+
+            const links = text.split('\n').map(l => l.trim()).filter(l => l && l.startsWith('https://t.me/'));
+            if (links.length === 0) { alert("No valid t.me links found."); return; }
+
+            document.getElementById('joinProgressText').innerText = `Joining ${links.length} groups from pasted links...`;
+            addJoinLog(`📋 Parsed ${links.length} manual links, starting join...`);
+
+            const res = await eel.join_target_groups(links, links.length)();
+            if (!res.success) {
+                alert(res.message);
+            }
+        }
+
+        eel.expose(log_join_message);
+        function log_join_message(msg) {
+            addJoinLog(msg);
+            addLog(msg);
+
+            if (msg.includes("[+]")) {
+                const c = parseInt(document.getElementById('groupsJoinedCount').innerText || '0');
+                document.getElementById('groupsJoinedCount').innerText = c + 1;
+            }
+
+            if (msg.includes("Mass Join Complete") || msg.includes("Error:")) {
+                document.getElementById('joinBtn').disabled = false;
+                document.getElementById('joinBtn').innerText = "🚀 Join From Category";
+                document.getElementById('joinProgressText').innerText = "Join complete!";
+            }
+        }
+
+        function addJoinLog(msg) {
+            const logs = document.getElementById('joinLogsWindow');
+            if (logs) {
+                logs.innerHTML += `${msg}<br>`;
+                logs.scrollTop = logs.scrollHeight;
+            }
+        }
+
+        // ======================== 6. SCHEDULE TAB ========================
+        function setDelay(seconds) {
+            document.getElementById('delaySec').value = seconds;
+            document.getElementById('customDelay').value = seconds;
+
+            let label = seconds + ' seconds';
+            if (seconds >= 60) label = (seconds / 60) + ' minutes';
+
+            document.getElementById('scheduleInfo').innerHTML =
+                `Current Delay: <span style="color: var(--blood-light); font-weight: bold;">${label}</span> between each send.`;
+
+            addLog(`⏰ Delay set to ${label}`);
+        }
+
+        // ======================== 7. MEDIA ATTACHMENT ========================
+        function onMediaSelected(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('mediaLabel').innerText = `📎 ${input.files[0].name}`;
+            }
+        }
+
+        function removeMedia() {
+            document.getElementById('mediaFileInput').value = '';
+            document.getElementById('mediaLabel').innerText = '📎 No media attached';
+        }
+
+        // ======================== 8. LOGS ========================
+        function addLog(msg) {
+            const logs = document.getElementById('logsWindow');
+            if (logs) {
+                logs.innerHTML += `${msg}<br>`;
+                logs.scrollTop = logs.scrollHeight;
+            }
+            const activity = document.getElementById('activityLog');
+            if (activity) {
+                activity.innerHTML += `${msg}<br>`;
+                activity.scrollTop = activity.scrollHeight;
+            }
+        }
+
+        // ======================== 9. LOGOUT ========================
+        function logoutApp() {
+            if (confirm("Log out? This will clear your saved license key.")) {
+                localStorage.removeItem('roav_license_key');
+                document.getElementById('appScreen').animate([
+                    { opacity: 1, transform: 'scale(1)' },
+                    { opacity: 0, transform: 'scale(0.95)' }
+                ], { duration: 400, fill: 'forwards', easing: 'ease-in' });
+
+                setTimeout(() => {
+                    document.getElementById('appScreen').style.display = 'none';
+                    document.getElementById('licenseScreen').style.display = 'block';
+                    document.getElementById('licenseScreen').style.opacity = '1';
+                    document.getElementById('licenseKey').value = '';
+                    document.getElementById('licenseMsg').innerText = '';
+                    document.getElementById('activateBtn').innerText = "Activate Terminal";
+                }, 400);
+            }
+        }
+    </script>
+</body>
+
+</html>
