@@ -1,17 +1,28 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import os
+import sys
 import requests
+import traceback
 from telegram_manager import TelegramManager
 import threading
+
+# Fix for asyncio on Windows/Vercel
+if sys.platform == 'win32':
+    import asyncio
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 app = Flask(__name__, template_folder='ui', static_folder='ui')
 CORS(app)
 
-ADMIN_SERVER_URL = "https://promoserver.vercel.app"  # TODO: Change to real server IP if needed
+ADMIN_SERVER_URL = os.environ.get("ADMIN_SERVER_URL", "https://promoserver.vercel.app")
 
-# Global Telegram Manager
-tg_manager = TelegramManager()
+# Global Telegram Manager (with error handling)
+try:
+    tg_manager = TelegramManager()
+except Exception as e:
+    print(f"Warning: TelegramManager initialization failed: {e}")
+    tg_manager = None
 
 # Store license validation state
 license_validated = {}
@@ -28,7 +39,30 @@ def get_hwid():
 @app.route('/')
 def index():
     """Serve the main HTML page"""
-    return render_template('index.html')
+    try:
+        return render_template('index.html')
+    except Exception as e:
+        return jsonify({
+            "error": "Could not load index.html",
+            "message": str(e),
+            "api_available": True
+        }), 500
+
+
+@app.route('/api', methods=['GET'])
+def api_info():
+    """API information endpoint"""
+    return jsonify({
+        "status": "operational",
+        "version": "1.0.0",
+        "endpoints": {
+            "auth": ["/api/validate_key", "/api/send_otp", "/api/verify_otp", "/api/verify_2fa"],
+            "accounts": ["/api/accounts", "/api/delete_account"],
+            "groups": ["/api/fetch_groups", "/api/join_groups"],
+            "broadcast": ["/api/broadcast", "/api/broadcast/stop"],
+            "system": ["/api/data", "/health"]
+        }
+    })
 
 
 @app.route('/api/validate_key', methods=['POST'])
@@ -68,13 +102,25 @@ def validate_license():
 @app.route('/api/send_otp', methods=['POST'])
 def send_otp():
     """Start login process for a new account"""
-    phone_number = request.json.get('phone_number')
+    if not tg_manager:
+        return jsonify({"success": False, "message": "Manager not initialized"}), 503
     
-    def _run():
-        result = tg_manager.run_sync(tg_manager.send_otp(phone_number))
+    try:
+        phone_number = request.json.get('phone_number')
+        if not phone_number:
+            return jsonify({"success": False, "message": "Phone number required"}), 400
+        
+        def _run():
+            try:
+                result = tg_manager.run_sync(tg_manager.send_otp(phone_number))
+            except Exception as e:
+                print(f"Error in send_otp: {e}")
     
-    threading.Thread(target=_run, daemon=True).start()
-    return jsonify({"success": True, "message": "OTP request sent"})
+        threading.Thread(target=_run, daemon=True).start()
+        return jsonify({"success": True, "message": "OTP request sent"})
+    except Exception as e:
+        print(f"send_otp error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
 
 
 @app.route('/api/verify_otp', methods=['POST'])
@@ -112,16 +158,30 @@ def verify_2fa():
 @app.route('/api/accounts', methods=['GET'])
 def get_logged_in_accounts():
     """Return a list of all active sessions"""
-    accounts = tg_manager.get_session_list()
-    return jsonify({"accounts": accounts})
+    if not tg_manager:
+        return jsonify({"accounts": [], "error": "Manager not initialized"}), 503
+    try:
+        accounts = tg_manager.get_session_list()
+        return jsonify({"accounts": accounts})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/api/delete_account', methods=['POST'])
 def delete_account():
     """Delete a session"""
-    phone_number = request.json.get('phone_number')
-    result = tg_manager.delete_session(phone_number)
-    return jsonify(result)
+    if not tg_manager:
+        return jsonify({"success": False, "message": "Manager not initialized"}), 503
+    
+    try:
+        phone_number = request.json.get('phone_number')
+        if not phone_number:
+            return jsonify({"success": False, "message": "Phone number required"}), 400
+        
+        result = tg_manager.delete_session(phone_number)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
 
 
 @app.route('/api/fetch_groups', methods=['POST'])
@@ -201,7 +261,20 @@ def join_target_groups():
 @app.route('/health', methods=['GET'])
 def health_check():
     """Health check endpoint for Vercel"""
-    return jsonify({"status": "healthy", "accounts": tg_manager.get_session_list()})
+    try:
+        accounts = tg_manager.get_session_list() if tg_manager else []
+        return jsonify({
+            "status": "healthy",
+            "accounts": accounts,
+            "manager_ready": tg_manager is not None
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "healthy",
+            "accounts": [],
+            "error": str(e),
+            "manager_ready": False
+        })
 
 
 @app.errorhandler(404)
@@ -214,6 +287,11 @@ def internal_error(error):
     return jsonify({"error": "Internal server error"}), 500
 
 
+# Export app for Vercel WSGI handler
+# This is the entry point for Vercel serverless functions
 if __name__ == '__main__':
-    # For local testing
-    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    # For local development only
+    port = int(os.environ.get('PORT', 5000))
+    print(f"Starting Flask app on port {port}")
+    app.run(debug=False, host='0.0.0.0', port=port)
+
