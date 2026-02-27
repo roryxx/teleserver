@@ -9,7 +9,140 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@300;400;600&display=swap"
         rel="stylesheet">
-    <script type="text/javascript" src="/eel.js"></script>
+    <script type="text/javascript">
+        // Eel.js Polyfill for Vercel (REST API wrapper)
+        window.eel = {
+            validate_license: (key) => async () => {
+                try {
+                    const formData = new FormData();
+                    formData.append('key', key);
+                    const res = await fetch('/api/validate_key', { method: 'POST', body: formData });
+                    return await res.json();
+                } catch (e) {
+                    return { success: false, message: 'Connection error: ' + e.message };
+                }
+            },
+            send_otp: (phone) => async () => {
+                try {
+                    const res = await fetch('/api/send_otp', { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone_number: phone })
+                    });
+                    return await res.json();
+                } catch (e) {
+                    return { success: false, message: 'Connection error: ' + e.message };
+                }
+            },
+            verify_otp: (phone, otp) => async () => {
+                try {
+                    const res = await fetch('/api/verify_otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone_number: phone, otp: otp })
+                    });
+                    return await res.json();
+                } catch (e) {
+                    return { success: false, message: 'Connection error: ' + e.message };
+                }
+            },
+            verify_2fa: (phone, password) => async () => {
+                try {
+                    const res = await fetch('/api/verify_2fa', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone_number: phone, password: password })
+                    });
+                    return await res.json();
+                } catch (e) {
+                    return { success: false, message: 'Connection error: ' + e.message };
+                }
+            },
+            get_logged_in_accounts: () => async () => {
+                try {
+                    const res = await fetch('/api/accounts');
+                    const data = await res.json();
+                    return data.accounts || [];
+                } catch (e) {
+                    return [];
+                }
+            },
+            delete_account: (phone) => async () => {
+                try {
+                    const res = await fetch('/api/delete_account', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone_number: phone })
+                    });
+                    return await res.json();
+                } catch (e) {
+                    return { success: false, message: 'Connection error' };
+                }
+            },
+            fetch_groups_from_account: (phone) => async () => {
+                try {
+                    const res = await fetch('/api/fetch_groups', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone_number: phone })
+                    });
+                    return await res.json();
+                } catch (e) {
+                    return { success: false, groups: [] };
+                }
+            },
+            start_broadcast: (groups, msg, delay, repeat, interval) => async () => {
+                try {
+                    const res = await fetch('/api/broadcast', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            target_group_ids: groups,
+                            message_text: msg,
+                            delay_seconds: delay,
+                            auto_repeat: repeat,
+                            repeat_interval: interval
+                        })
+                    });
+                    return await res.json();
+                } catch (e) {
+                    return { success: false, message: 'Connection error' };
+                }
+            },
+            stop_broadcast: () => async () => {
+                try {
+                    const res = await fetch('/api/broadcast/stop', { method: 'POST' });
+                    return await res.json();
+                } catch (e) {
+                    return { success: false, message: 'Connection error' };
+                }
+            },
+            join_target_groups: (links, count) => async () => {
+                try {
+                    const res = await fetch('/api/join_groups', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ links: links, join_count: count })
+                    });
+                    return await res.json();
+                } catch (e) {
+                    return { success: false, message: 'Connection error' };
+                }
+            },
+            fetch_app_data: () => async () => {
+                try {
+                    const res = await fetch('/api/data');
+                    const data = await res.json();
+                    return data.data || {};
+                } catch (e) {
+                    return {};
+                }
+            },
+            expose: function(func) {
+                // No-op for compatibility
+            }
+        };
+    </script>
     <style>
         :root {
             /* Dark bloody red palette */
